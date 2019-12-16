@@ -1,7 +1,7 @@
 tracktor:
   name: Tracktor++
   # Subfolder name in output/tracker/
-  module_name: MOT17
+  module_name: Ski
   desription:
   seed: 12345
   # frcnn or fpn
