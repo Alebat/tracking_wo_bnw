@@ -110,10 +110,11 @@ class SkiWrapper(Dataset):
 
         sequences = self._folders
 
-        if f"Ski-{split}" in sequences:
-            sequences = [f"Ski-{split}"]
-        else:
-            raise NotImplementedError("Ski split not available " + f"Ski-{split}")
+        if not 'all' == split:
+            if f"Ski-{split}" in sequences:
+                sequences = [f"Ski-{split}"]
+            else:
+                raise NotImplementedError("Ski split not available " + f"Ski-{split}")
 
         self._data = []
         for s in sequences:
