@@ -30,13 +30,13 @@ tracktor:
 
   tracker:
     # FRCNN score threshold for detections
-    detection_person_thresh: 0.3
+    detection_person_thresh: 0.2
     # FRCNN score threshold for keeping the track alive
-    regression_person_thresh: 0.5
+    regression_person_thresh: 0.2
     # NMS threshold for detection
-    detection_nms_thresh: 0.3
+    detection_nms_thresh: 0.2
     # NMS theshold while tracking
-    regression_nms_thresh: 0.6
+    regression_nms_thresh: 0.3
     # motion model settings
     motion_model:
       enabled: False
@@ -60,8 +60,8 @@ tracktor:
     # Use siamese network to do reid
     do_reid: True
     # How much timesteps dead tracks are kept and cosidered for reid
-    inactive_patience: 10
+    inactive_patience: 20
     # How similar do image and old track need to be to be considered the same person
-    reid_sim_threshold: 2.0
+    reid_sim_threshold: 1.5
     # How much IoU do track and image need to be considered for matching
     reid_iou_threshold: 0.2
