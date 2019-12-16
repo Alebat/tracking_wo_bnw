@@ -40,7 +40,7 @@ for split in ['smallTrain', 'smallVal', 'train']:
     _sets[name] = (lambda *args, split=split: MarCUHMOT(split, *args))
 
 name = f'Ski-all'
-_sets[name] = (lambda *args, split=split: SkiWrapper(split))
+_sets[name] = (lambda *args, split=split: SkiWrapper())
 
 
 class Datasets(object):
