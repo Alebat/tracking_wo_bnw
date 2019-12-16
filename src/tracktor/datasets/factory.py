@@ -39,8 +39,15 @@ for split in ['smallTrain', 'smallVal', 'train']:
     name = f'marcuhmot_{split}'
     _sets[name] = (lambda *args, split=split: MarCUHMOT(split, *args))
 
-name = f'Ski-all'
-_sets[name] = (lambda *args, split=split: SkiWrapper())
+import os
+import os.path as osp
+from ..config import cfg
+
+_mot_dir = osp.join(cfg.DATA_DIR, 'Ski')
+_folders = os.listdir(os.path.join(_mot_dir))
+for split in ['all'] + _folders:
+    name = f'Ski-{split}'
+    _sets[name] = (lambda *args, split=split: SkiWrapper(split))
 
 
 class Datasets(object):
