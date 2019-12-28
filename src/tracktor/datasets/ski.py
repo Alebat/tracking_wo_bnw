@@ -9,9 +9,23 @@ from PIL import Image
 from torch.utils.data import Dataset
 
 import cv2
+import pandas as pd
 
 from ..config import cfg
 from torchvision.transforms import ToTensor
+
+
+def read_images(vc, rotate90=False):
+    yes = True
+    f = 0
+    while yes:
+        yes, img = vc.read()
+        if yes:
+            if rotate90:
+                yield f, cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+            else:
+                yield f, img
+            f += 1
 
 
 class SkiSequence(Dataset):
@@ -21,6 +35,7 @@ class SkiSequence(Dataset):
             seq_name (string): Sequence to take
         """
         self._seq_name = seq_name
+        self.no_gt = True
 
         self._mot_dir = osp.join(cfg.DATA_DIR, 'Ski')
 
@@ -31,20 +46,25 @@ class SkiSequence(Dataset):
         assert seq_name in self._folders, \
             'Image set does not exist: {}'.format(seq_name)
 
-        self.data, self.no_gt = self._sequence()
+        self._data, self._det, self._len = self._sequence()
 
     def __len__(self):
-        return len(self.data)
+        return self._len
 
     def __getitem__(self, idx):
         """Return the ith image converted to blob"""
-        data = self.data[idx]
-        img = Image.open(data['im_path']).convert("RGB")
+        f, img = next(self._data)
         img = self.transforms(img)
+        print(f)
+        if f in self._det.index:
+            dets = self._det.loc[[f]]
+            conv = np.array([det.astype(np.float32) for det in dets.values[:, 1:5]])
+        else:
+            conv = np.ndarray((0,))
 
         sample = {
             'img': img,
-            'img_path': data['im_path']
+            'dets': conv,
         }
 
         return sample
@@ -53,17 +73,18 @@ class SkiSequence(Dataset):
         seq_name = self._seq_name
         seq_path = osp.join(self._mot_dir, seq_name)
 
-        seq_length = len(os.listdir(seq_path))
+        vc = cv2.VideoCapture(seq_path)
+        length = int(vc.get(7))
 
-        total = []
-        no_gt = True
+        images = read_images(vc)
 
-        for i in range(1, seq_length + 1):
-            im_path = osp.join(seq_path, "{:06d}.jpg".format(i))
-            sample = {'im_path': im_path}
-            total.append(sample)
+        det = pd.read_csv(f"{seq_path}.txt",
+                          sep=',',
+                          header=None,
+                          index_col=0,
+                          names=['frame', 'id', 'bb_left', 'bb_top', 'bb_width', 'bb_height', 'conf', 'x', 'y', 'z'])
 
-        return total, no_gt
+        return images, det, length
 
     def __str__(self):
         return f"Ski-{self._seq_name}"
@@ -82,7 +103,7 @@ class SkiSequence(Dataset):
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        file = osp.join(output_dir, 'Ski-' + self._seq_name[6:8] + '.txt')
+        file = osp.join(output_dir, self._seq_name + '.tracks.txt')
 
         with open(file, "w") as of:
             writer = csv.writer(of, delimiter=',')

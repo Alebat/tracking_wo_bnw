@@ -24,7 +24,7 @@ tracktor:
   # compile video with: `ffmpeg -f image2 -framerate 15 -i %06d.jpg -vcodec libx264 -y movie.mp4 -vf scale=320:-1`
   write_images: False
   # dataset (look into tracker/datasets/factory.py)
-  dataset: Ski-IMG_0818
+  dataset: IMG_0886.MOV
   # [start percentage, end percentage], e.g., [0.0, 0.5] for train and [0.75, 1.0] for val split.
   frame_split: [0.0, 1.0]
 
@@ -46,7 +46,7 @@ tracktor:
       center_only: True
     # DPM or DPM_RAW or 0, raw includes the unfiltered (no nms) versions of the provided detections,
     # 0 tells the tracker to use private detections (Faster R-CNN)
-    public_detections: False
+    public_detections: True
     # How much last appearance features are to keep
     max_features_num: 10
     # Do camera motion compensation
@@ -62,6 +62,6 @@ tracktor:
     # How much timesteps dead tracks are kept and cosidered for reid
     inactive_patience: 20
     # How similar do image and old track need to be to be considered the same person
-    reid_sim_threshold: 1.5
+    reid_sim_threshold: 2.0
     # How much IoU do track and image need to be considered for matching
-    reid_iou_threshold: 0.2
+    reid_iou_threshold: 0.5

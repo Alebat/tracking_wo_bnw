@@ -7,7 +7,6 @@ import torch
 from torch.utils.data import DataLoader
 
 import motmetrics as mm
-mm.lap.default_solver = 'lap'
 
 import torchvision
 import yaml
@@ -21,6 +20,8 @@ from tracktor.oracle_tracker import OracleTracker
 from tracktor.tracker import Tracker
 from tracktor.reid.resnet import resnet50
 from tracktor.utils import interpolate, plot_sequence, get_mot_accum, evaluate_mot_accums
+
+mm.lap.default_solver = 'lap'
 
 ex = Experiment()
 

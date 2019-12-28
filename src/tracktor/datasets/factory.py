@@ -1,13 +1,14 @@
-from tracktor.datasets.ski import SkiWrapper
-
 from .mot_wrapper import MOT17_Wrapper, MOT19CVPR_Wrapper, MOT17LOWFPS_Wrapper
 from .mot_siamese_wrapper import MOT_Siamese_Wrapper
 from .mot15_wrapper import MOT15_Wrapper
 from .marcuhmot import MarCUHMOT
+import os
+import os.path as osp
 
+from .ski import SkiWrapper
+from ..config import cfg
 
 _sets = {}
-
 
 # Fill all available datasets, change here to modify / add new datasets.
 for split in ['train', 'test', 'all', '01', '02', '03', '04', '05', '06', '07', '08', '09',
@@ -15,7 +16,7 @@ for split in ['train', 'test', 'all', '01', '02', '03', '04', '05', '06', '07', 
     for dets in ['DPM16', 'DPM_RAW16', 'DPM17', 'FRCNN17', 'SDP17', '17', '']:
         name = f'mot17_{split}_{dets}'
         _sets[name] = (lambda *args, split=split,
-                       dets=dets: MOT17_Wrapper(split, dets, *args))
+                              dets=dets: MOT17_Wrapper(split, dets, *args))
 
 for split in ['train', 'test', 'all', '01', '02', '03', '04', '05', '06', '07', '08']:
     # only FRCNN detections
@@ -39,14 +40,10 @@ for split in ['smallTrain', 'smallVal', 'train']:
     name = f'marcuhmot_{split}'
     _sets[name] = (lambda *args, split=split: MarCUHMOT(split, *args))
 
-import os
-import os.path as osp
-from ..config import cfg
-
 _mot_dir = osp.join(cfg.DATA_DIR, 'Ski')
-_folders = os.listdir(os.path.join(_mot_dir))
+_folders = list(filter(lambda x: str.lower(x[-4:]) != ".txt", os.listdir(os.path.join(_mot_dir))))
 for split in ['all'] + _folders:
-    name = f'Ski-{split}'
+    name = f'{split}'
     _sets[name] = (lambda *args, split=split: SkiWrapper(split))
 
 
