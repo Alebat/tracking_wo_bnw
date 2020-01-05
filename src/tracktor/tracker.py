@@ -1,15 +1,13 @@
 from collections import deque
 
+import cv2
 import numpy as np
 import torch
 import torch.nn.functional as F
-from torch.autograd import Variable
 from scipy.optimize import linear_sum_assignment
-import cv2
+from torchvision.ops.boxes import clip_boxes_to_image, nms
 
 from .utils import bbox_overlaps, warp_pos, get_center, get_height, get_width, make_pos
-
-from torchvision.ops.boxes import clip_boxes_to_image, nms
 
 
 class Tracker:
@@ -202,7 +200,7 @@ class Tracker:
 			im2_gray = cv2.cvtColor(im2, cv2.COLOR_RGB2GRAY)
 			warp_matrix = np.eye(2, 3, dtype=np.float32)
 			criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, self.number_of_iterations,  self.termination_eps)
-			cc, warp_matrix = cv2.findTransformECC(im1_gray, im2_gray, warp_matrix, self.warp_mode, criteria)
+			cc, warp_matrix = cv2.findTransformECC(im1_gray, im2_gray, warp_matrix, self.warp_mode, criteria, None)
 			warp_matrix = torch.from_numpy(warp_matrix)
 
 			for t in self.tracks:
