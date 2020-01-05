@@ -2,11 +2,6 @@ from .mot_wrapper import MOT17_Wrapper, MOT19CVPR_Wrapper, MOT17LOWFPS_Wrapper
 from .mot_siamese_wrapper import MOT_Siamese_Wrapper
 from .mot15_wrapper import MOT15_Wrapper
 from .marcuhmot import MarCUHMOT
-import os
-import os.path as osp
-
-from .ski import SkiWrapper
-from ..config import cfg
 
 _sets = {}
 
@@ -39,12 +34,6 @@ for split in ['PETS09-S2L1', 'TUD-Stadtmitte', 'TUD-Campus', 'train', 'test', 'l
 for split in ['smallTrain', 'smallVal', 'train']:
     name = f'marcuhmot_{split}'
     _sets[name] = (lambda *args, split=split: MarCUHMOT(split, *args))
-
-_mot_dir = osp.join(cfg.DATA_DIR, 'Ski')
-_folders = list(filter(lambda x: str.lower(x[-4:]) != ".txt", os.listdir(os.path.join(_mot_dir))))
-for split in ['all'] + _folders:
-    name = f'{split}'
-    _sets[name] = (lambda *args, split=split: SkiWrapper(split))
 
 
 class Datasets(object):
